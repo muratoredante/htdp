@@ -31,3 +31,62 @@
                        (text (substring s i (string-length s))
                                         L-SIZE "black"))
                BCKG))
+
+; editor -> Image
+; Renders the strings with cursor between them.
+(check-expect (render (make-editor "ABC" 1)) (place-cursor "ABC" 1))
+(define (render e)
+  (place-cursor (editor-text e) (editor-i e)))
+
+; Number String -> String
+; Deletes char at given position
+(check-expect (string-delete 1 "ABC") "AC")
+(check-expect (string-delete 2 "ABC") "AB")
+(define (string-delete i str)
+  (if (= (string-length str) 0) ""
+  (string-append (substring str 0 i)
+                 (substring str (+ i 1) (string-length str)))))
+
+; Number String 1String -> String
+; Places char at given position
+(check-expect (string-insert 1 "ABC" "X") "AXBC") 
+(define (string-insert i str char)
+  (string-append (substring str 0 i) char
+                 (substring str i (string-length str))))
+
+; editor -> Boolean
+; Check if text is inside limit
+(define (ed-limit ed)
+  (< (string-length (editor-text ed))
+                    LIMIT))
+
+; editor KeyEvent -> editor
+; Add corresponding character to editor
+(define edx (make-editor "ABC" 1))
+(define edx-left (make-editor "ABC" 0))
+(define edx-right (make-editor "ABC" 2))
+(check-expect (edit edx "D") (make-editor "ADBC" 2))
+(check-expect (edit edx "\b") (make-editor "BC" 0))
+(check-expect (edit edx-left "\b") (make-editor "ABC" 0))
+(check-expect (edit edx "left") (make-editor "ABC" 0))
+(check-expect (edit edx "right") (make-editor "ABC" 2))
+(check-expect (edit edx "up") edx)
+
+(define (edit ed ke)
+  (cond
+    [(string=? "\b" ke) (if (> (editor-i ed) 0)
+     (make-editor (string-delete (- (editor-i ed) 1) (editor-text ed))
+                                     (- (editor-i ed) 1)) ed)]
+    [(and (string=? "left" ke) (> (editor-i ed) 0))
+     (make-editor (editor-text ed) (- (editor-i ed) 1))]
+    [(and (string=? "right" ke) (< (editor-i ed) (string-length (editor-text ed))))
+     (make-editor (editor-text ed) (+ (editor-i ed) 1))]
+    [(and (= (string-length ke) 1) (ed-limit ed))
+     (make-editor (string-insert (editor-i ed) (editor-text ed) ke) (+ (editor-i ed) 1))]
+    [else ed]))
+
+
+(define (run text)
+   (big-bang (make-editor text 0)
+     [to-draw render]
+     [on-key edit]))
