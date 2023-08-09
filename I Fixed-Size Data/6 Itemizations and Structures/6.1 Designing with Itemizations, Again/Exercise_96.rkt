@@ -17,9 +17,9 @@
 (define CANVAS
   (empty-scene 200 200))
 
-(define TANK-SPEED 30)
 (define MISSILE-SPEED 50)
-(define UFO-SPEED 40)
+(define UFO-Y-SPEED 20)
+
 
 ; (make-aim (make-posn 20 10) (make-tank 28 -3))
 ; UFO is at (20, 10) while the tank is at x=28 at speed -3
