@@ -25,12 +25,21 @@
 ; -boa
 ; -armadillo
 
+; Boa -> Number
+; Calculates volume of boa
+(define (volume-boa b)
+  (* (sqr (boa-length b)) (boa-girth b) pi))
+
 ; ZooAnimal Number -> Boolean
 ; Checks whether the v volume of the cage is enough for animal
+(check-expect (fits? 5 10) #true)
+(check-expect (fits? (make-spider 11 9) 8) #false)
+(check-expect (fits? (make-boa 5 5) 392) #false)
+(check-expect (fits? (make-armadillo 4 5) 5) #true)
 (define (fits? a v)
-  (< v
+  (> v
      (cond
-    [(spider? a) ]
-    [(elephant? a)]
-    [(number? a)]
-    [(armadillo? a)]))
+    [(spider? a) (spider-space a)]
+    [(boa? a) (volume-boa a)]
+    [(number? a) a]
+    [(armadillo? a) (armadillo-space a)])))
