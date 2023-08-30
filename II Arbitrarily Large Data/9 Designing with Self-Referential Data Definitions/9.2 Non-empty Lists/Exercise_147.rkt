@@ -22,4 +22,5 @@
 (check-expect (one-true (cons #false (cons #false '()))) #false)
 (define (one-true l)
   (cond
-    [(empty? (rest l)) ]))
+    [(empty? (rest l)) (first l)]
+    [else (or (first l) (one-true (rest l)))]))
