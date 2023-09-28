@@ -19,4 +19,22 @@
 ; Email Email-List -> Email-List
 (check-expect (insert (make-email "a" 2 "a") (list (make-email "b" 4 "b")))
               (list (make-email "b" 4 "b") (make-email "a" 2 "a")))
+(define (insert e l)
+  (cond
+    [(empty? l) (list e)]
+    [else (if (greater e (first l)) (cons e (rest l))
+              (cons (first l) (insert e (rest l))))]))
 
+; Email Email -> Boolean
+(check-expect (greater (make-email "b" 4 "b") (make-email "a" 2 "a")) #true)
+(check-expect (greater (make-email "b" 2 "b") (make-email "a" 4 "a")) #false)
+(define (greater e1 e2)
+  (>= (email-date e1) (email-date e2)))
+
+; To sort by date we merely replace greater with greater-alph
+; in the insertion function
+
+; Email Email -> Boolean
+(check-expect (greater (make-email "b" 4 "b") (make-email "a" 2 "a")) #true)
+(define (greater-alph e1 e2)
+ (string>? (email-from e1) (email-from e2)))
