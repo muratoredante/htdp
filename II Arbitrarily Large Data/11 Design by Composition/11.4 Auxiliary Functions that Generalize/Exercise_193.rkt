@@ -32,6 +32,20 @@
     [(empty? (rest (rest (rest p)))) (third p)]
     [else (last (rest p))]))
 
+; Number Polygon -> Posn
+; Adds an aditional point to the end of a polygon
+(check-expect (add-at-end (make-posn 4 4)
+              (list (make-posn 1 1) (make-posn 2 2) (make-posn 3 3)))
+              (list (make-posn 1 1) (make-posn 2 2) (make-posn 3 3) (make-posn 4 4)))
+(check-expect (add-at-end (make-posn 5 5)
+              (list (make-posn 1 1) (make-posn 2 2) (make-posn 3 3) (make-posn 4 4)))
+              (list (make-posn 1 1) (make-posn 2 2) (make-posn 3 3) (make-posn 4 4) (make-posn 5 5)))
+(define (add-at-end e p)
+  (cond
+    [(empty? (rest (rest (rest p))))
+     (cons (first p) (cons (second p) (cons (third p) (cons e '()))))]
+    [else (cons (first p) (add-at-end e (rest p)))]))
+
 (check-expect
   (render-poly-v1 MT square-p)
   (scene+line
@@ -58,5 +72,5 @@
 ; Image Polygon -> Image 
 ; adds a corner of p to img
 (define (render-poly-v2 img p)
-  (connect-dots img (cons (last p) p)))
+  (connect-dots img (add-at-end (first p) p)))
 
